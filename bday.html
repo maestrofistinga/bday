@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>С Днём Рождения, Ксения! 🎉💖</title>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #fff0f3;
+            --card-bg: rgba(255, 255, 255, 0.94);
+            --primary-color: #ff4b72;
+            --primary-hover: #e03a5f;
+            --text-color: #2c3e50;
+            --text-muted: #7f8c8d;
+            --border-color: #ffe1e8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Анимированный плавающий фон с цветами и собачками */
+        .bg-floating-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .floating-item {
+            position: absolute;
+            font-size: 28px;
+            opacity: 0;
+            will-change: transform, opacity;
+            animation: floatUp 12s linear infinite;
+            user-select: none;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(105vh) rotate(0deg) scale(0.8);
+                opacity: 0;
+            }
+            15% {
+                opacity: 0.6;
+            }
+            85% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-15vh) rotate(360deg) scale(1.1);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 28px;
+            padding: 24px;
+            box-shadow: 0 12px 35px rgba(255, 75, 114, 0.18);
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .screen {
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .screen.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        h1 {
+            font-size: 22px;
+            margin-bottom: 8px;
+            color: #d6335c;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        /* Кнопка */
+        .btn-primary {
+            background: linear-gradient(135deg, #ff4b72, #ff758c);
+            color: white;
+            border: none;
+            outline: none;
+            padding: 14px 24px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 75, 114, 0.35);
+            transition: all 0.2s;
+            width: 100%;
+            margin-top: 10px;
+            touch-action: manipulation;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.96);
+        }
+
+        /* Карточка комплиментов */
+        .compliment-card {
+            background: #ffffff;
+            border: 2px solid var(--border-color);
+            border-radius: 20px;
+            padding: 25px 18px;
+            margin: 15px 0 10px 0;
+            box-shadow: 0 8px 20px rgba(255, 75, 114, 0.08);
+            min-height: 130px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .fadeIn {
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .compliment-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .compliment-text {
+            font-size: 16px;
+            color: #2c3e50;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        /* Постскрипт под карточкой комплиментов */
+        .permanent-ps {
+            margin: 5px 0 15px 0;
+            font-size: 13px;
+            color: #7f8c8d;
+            font-style: italic;
+            line-height: 1.4;
+            padding: 8px 12px;
+            background: rgba(255, 225, 232, 0.4);
+            border-radius: 12px;
+            border: 1px dashed #ffb6c1;
+        }
+
+        .compliment-progress {
+            font-size: 12px;
+            color: #a0a0a0;
+            margin-top: 8px;
+        }
+
+        /* Конверт и письмо */
+        .envelope-wrapper {
+            margin: 20px 0;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        .envelope {
+            width: 100%;
+            background: #ffe3e8;
+            border: 2px dashed #ff4b72;
+            border-radius: 20px;
+            padding: 25px 20px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .envelope-icon {
+            font-size: 55px;
+            margin-bottom: 8px;
+        }
+
+        .letter-content {
+            display: none;
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 22px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            text-align: left;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-size: 14px;
+            color: #333;
+            max-height: 320px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .letter-header {
+            font-weight: bold;
+            color: #d6335c;
+            font-size: 17px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #ffe1e8;
+            padding-bottom: 6px;
+        }
+
+        .letter-body {
+            white-space: pre-line;
+        }
+
+        .letter-ps {
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px dashed #ffd1dc;
+            font-size: 13px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Плавающий фон (цветы и собачки) -->
+    <div class="bg-floating-container" id="bgFloating"></div>
+
+    <div class="container">
+        <!-- Экран 1: Комплименты -->
+        <div id="screen1" class="screen active" style="display: block;">
+            <h1>С Днём Рождения, Ксения! 🎉</h1>
+            <p>Несколько слов о том, какая ты невероятная...</p>
+
+            <div class="compliment-card fadeIn" id="compCard">
+                <div class="compliment-icon" id="compIcon">🌹</div>
+                <div class="compliment-text" id="compText">Ты приносишь красоту и гармонию во всё вокруг!</div>
+                <div class="compliment-progress" id="compProgress">1 из 5</div>
+            </div>
+
+            <!-- Постоянный постскрипт под комплиментами -->
+            <div class="permanent-ps">
+                P.S. Некоторые моменты возможно я и не видел, но я это чую, что так :)
+            </div>
+
+            <button type="button" class="btn-primary" id="compBtn" onclick="nextCompliment()">Ещё комплимент ✨</button>
+        </div>
+
+        <!-- Экран 2: Конверт и Пожелание -->
+        <div id="screen2" class="screen">
+            <h1>Тебе письмо ✉️</h1>
+            <p>Нажми на конверт, чтобы прочитать личное поздравление</p>
+
+            <div class="envelope-wrapper" id="envelopeWrapper" onclick="readLetter()">
+                <div class="envelope">
+                    <div class="envelope-icon">💌</div>
+                    <div style="font-weight: 600; color: #d6335c; font-size: 16px;">Открыть письмо</div>
+                </div>
+            </div>
+
+            <!-- Текст самого письма -->
+            <div class="letter-content" id="letterContent">
+                <div class="letter-header">Дорогая Ксения! 💖🎉</div>
+                <div class="letter-body">
+Сегодня твой прекрасный день, и я хочу пожелать тебе всегда оставаться невероятно счастливой, сияющей, доброй и замечательной! ✨ Пусть каждый твой день наполняется искренней радостью и улыбками 😊🌸
+
+Пусть твоя жизнь будет яркой, интересной и насыщенной, а все самые заветные мечты сбываются легко и быстро! 💫 Живи в гармонии, любви и бесконечном счастье 💖
+
+Оставайся всегда такой же невероятной, прекрасной и особенной! С Днём Рождения! 🥳🎈✨
+                </div>
+                <div class="letter-ps">
+P.S Хочу сказать напоследок, что ты прекрасна :)
+                </div>
+            </div>
+
+            <button type="button" class="btn-primary" id="sendBtn" style="display: none;" onclick="finishView()">Отправить спасибо ❤️</button>
+        </div>
+
+        <!-- Экран 3: Финал -->
+        <div id="screen3" class="screen">
+            <div style="font-size: 65px; margin-bottom: 15px;">💖</div>
+            <h1>Спасибо!</h1>
+            <p>Пусть этот день подарит тебе множество улыбок и чудес! ✨</p>
+        </div>
+    </div>
+
+    <script>
+        // Генерация анимированного фона
+        const bgItems = ['🌹', '🌸', '💐', '🌺', '🐶', '🐕', '🐩', '✨', '💖'];
+        const bgContainer = document.getElementById('bgFloating');
+
+        function createFloatingBg() {
+            for (let i = 0; i < 14; i++) {
+                const item = document.createElement('div');
+                item.className = 'floating-item';
+                item.textContent = bgItems[Math.floor(Math.random() * bgItems.length)];
+
+                item.style.left = (Math.random() * 90 + 2) + 'vw';
+                const duration = 9 + Math.random() * 6;
+                item.style.animationDuration = duration + 's';
+                item.style.animationDelay = (-Math.random() * duration) + 's';
+
+                item.style.fontSize = (20 + Math.random() * 16) + 'px';
+                bgContainer.appendChild(item);
+            }
+        }
+        createFloatingBg();
+
+        // Безопасный запуск салюта
+        function launchConfetti(count = 30) {
+            try {
+                if (typeof confetti === 'function') {
+                    confetti({
+                        particleCount: count,
+                        spread: 60,
+                        origin: { y: 0.6 },
+                        disableForReducedMotion: true
+                    });
+                }
+            } catch (e) {
+                console.log('Confetti notice:', e);
+            }
+        }
+
+        // Массив комплиментов
+        const compliments = [
+            { icon: '🌹', text: 'Ты приносишь красоту и гармонию во всё вокруг!' },
+            { icon: '🐶', text: 'Твоя улыбка способна осветить даже самый пасмурный день!' },
+            { icon: '🌸', text: 'У тебя потрясающий стиль и невероятное обаяние!' },
+            { icon: '✨', text: 'Рядом с тобой всегда легко, тепло и уютно!' },
+            { icon: '💐', text: 'Ты уникальная, вдохновляющая и очень особенная!' }
+        ];
+
+        let currentComp = 0;
+
+        function nextCompliment() {
+            if (currentComp < compliments.length - 1) {
+                currentComp++;
+
+                document.getElementById('compIcon').textContent = compliments[currentComp].icon;
+                document.getElementById('compText').textContent = compliments[currentComp].text;
+                document.getElementById('compProgress').textContent = `${currentComp + 1} из ${compliments.length}`;
+
+                const card = document.getElementById('compCard');
+                card.classList.remove('fadeIn');
+                void card.offsetWidth;
+                card.classList.add('fadeIn');
+
+                launchConfetti(25);
+
+                if (currentComp === compliments.length - 1) {
+                    document.getElementById('compBtn').textContent = 'Перейти к письму 💌';
+                }
+            } else {
+                nextScreen(2);
+            }
+        }
+
+        function nextScreen(screenNum) {
+            document.querySelectorAll('.screen').forEach(s => {
+                s.classList.remove('active');
+                s.style.display = 'none';
+            });
+            const target = document.getElementById(`screen${screenNum}`);
+            if (target) {
+                target.style.display = 'block';
+                setTimeout(() => target.classList.add('active'), 10);
+            }
+        }
+
+        function readLetter() {
+            document.getElementById('envelopeWrapper').style.display = 'none';
+            document.getElementById('letterContent').style.display = 'block';
+            document.getElementById('sendBtn').style.display = 'block';
+            launchConfetti(80);
+        }
+
+        function finishView() {
+            nextScreen(3);
+            launchConfetti(100);
+        }
+    </script>
+</body>
+</html>

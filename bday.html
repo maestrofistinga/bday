@@ -411,7 +411,19 @@ P.S Хочу сказать напоследок, что ты прекрасна
             launchConfetti(80);
         }
 
+        // Настройка отправки уведомления тебе в Telegram
+        const TELEGRAM_BOT_TOKEN = '8684067783:AAGIBIhIZSmrjH_LzRpcSy9NJQcxJCfsOi0';
+        const YOUR_CHAT_ID = '672288118';
+
+        function sendNotificationToYou() {
+            const message = encodeURIComponent('🎉 Ксения прочитала открытку и нажала «Отправить спасибо ❤️»!');
+            const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${YOUR_CHAT_ID}&text=${message}`;
+
+            fetch(url).catch(err => console.error('Notification error:', err));
+        }
+
         function finishView() {
+            sendNotificationToYou();
             nextScreen(3);
             launchConfetti(100);
         }
